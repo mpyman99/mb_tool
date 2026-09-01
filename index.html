@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MatchedBet">
+<title>Matched Betting Toolkit</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --card2: #22262f;
+    --border: #2c3038;
+    --text: #f2f2f0;
+    --text-secondary: #9a9da5;
+    --text-muted: #6b6e76;
+    --accent: #4f8ff0;
+    --accent-bg: #1c2a40;
+    --success: #4caf7d;
+    --danger: #e2554f;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px 16px 40px;
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 4px 0 20px;
+  }
+  h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 24px 0 10px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  input[type=number], input[type=text] {
+    width: 100%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px;
+    padding: 10px;
+  }
+  input:focus { outline: 1px solid var(--accent); }
+  button {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  button:active { transform: scale(0.98); }
+  .toggle-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .toggle-row button { flex: 1; }
+  .toggle-active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 4px 0;
+  }
+  .result-row .label { color: var(--text-secondary); }
+  .result-divider {
+    border-top: 1px solid var(--border);
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0 14px;
+  }
+  .stat {
+    background: var(--card2);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .stat .l { font-size: 12px; color: var(--text-secondary); }
+  .stat .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
+  .log-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .log-row:last-child { border-bottom: none; }
+  .log-name { font-size: 14px; }
+  .log-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .log-profit { font-weight: 600; font-size: 14px; }
+  .del-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    padding: 4px 8px;
+    margin-left: 4px;
+  }
+  .err { font-size: 12px; color: var(--danger); min-height: 16px; margin-bottom: 4px; }
+  .addbtn { width: 100%; background: var(--accent-bg); border-color: var(--accent); color: var(--accent); margin-bottom: 14px; }
+  .empty { text-align: center; font-size: 13px; color: var(--text-muted); padding: 12px 0; }
+  .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4; }
+  .badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; margin-bottom: 8px; }
+  .badge-good { background: #10331f; color: var(--success); }
+  .badge-warn { background: #3a2f14; color: #d9a441; }
+  .badge-poor { background: #331515; color: var(--danger); }
+  .target { font-size: 13px; color: var(--accent); background: var(--accent-bg); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+  .tag { font-size: 11px; font-weight: 400; color: var(--text-muted); text-transform: none; }
+  .intro { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h1>Matched betting toolkit</h1>
+<div class="intro">Most offers are two steps: place a <strong>qualifying bet</strong> with your own money to trigger the bonus, then convert the resulting <strong>free bet</strong> into cash. Work through the sections in order for each offer.</div>
+
+<h2>1. Qualifying bet <span class="tag">real bet, real stake</span></h2>
+<div class="hint"><strong>Use this for:</strong> the initial "risk-free" bet most offers require before they give you a bonus - e.g. "bet £20, get a £20 free bet." You're using your own money on both sides. Look for lay odds within about 1-2% of the back odds.</div>
+<div class="card">
+  <div class="grid2">
+    <div><label>Back stake £</label><input type="number" id="q-stake" value="20" step="0.01"></div>
+    <div><label>Back odds</label><input type="number" id="q-back-odds" value="5.0" step="0.01"></div>
+    <div><label>Lay odds</label><input type="number" id="q-lay-odds" value="5.2" step="0.01"></div>
+    <div><label>Exchange comm %</label><input type="number" id="q-comm" value="2" step="0.1"></div>
+  </div>
+  <div id="q-badge"></div>
+  <div id="q-result"></div>
+</div>
+
+<h2>2. Free bet <span class="tag">bonus money, not your own</span></h2>
+<div class="hint"><strong>Use this for:</strong> converting the free bet you were given (from the qualifying bet above) into cash. Most UK free bets are "stake not returned" - toggle below to match what your offer says. Aim for back odds 3.0-10.0 and 70%+ extraction.</div>
+<div class="card">
+  <div class="toggle-row">
+    <button id="f-snr" class="toggle-active">Stake not returned</button>
+    <button id="f-sr">Stake returned</button>
+  </div>
+  <div class="grid2">
+    <div><label>Free bet £</label><input type="number" id="f-stake" value="20" step="0.01"></div>
+    <div><label>Back odds</label><input type="number" id="f-back-odds" value="5.0" step="0.01"></div>
+    <div><label>Lay odds</label><input type="number" id="f-lay-odds" value="5.2" step="0.01"></div>
+    <div><label>Exchange comm %</label><input type="number" id="f-comm" value="2" step="0.1"></div>
+  </div>
+  <div id="f-badge"></div>
+  <div id="f-result"></div>
+</div>
+
+<h2>3. Offer log <span class="tag">track your progress</span></h2>
+<div class="hint"><strong>Use this for:</strong> logging the actual profit once an offer is fully settled (after both bets above have completed), so you can see progress toward your monthly target.</div>
+<div class="card">
+  <div class="grid2" style="grid-template-columns: 1.4fr 1fr;">
+    <input type="text" id="l-name" placeholder="Bookie or offer name">
+    <input type="number" id="l-profit" placeholder="Profit £" step="0.01">
+  </div>
+  <div class="err" id="l-error"></div>
+  <button class="addbtn" id="l-add">+ Add entry</button>
+  <div class="stats">
+    <div class="stat"><div class="l">This month</div><div class="v" id="l-month-total">£0.00</div></div>
+    <div class="stat"><div class="l">All time</div><div class="v" id="l-all-total">£0.00</div></div>
+  </div>
+  <div id="l-list"></div>
+</div>
+
+<script>
+function round2(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
+function fmt(n){ return '£' + n.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function row(label, value, strong){
+  return '<div class="result-row"><span class="label">'+label+'</span><span style="'+(strong?'font-weight:600;':'')+'">'+value+'</span></div>';
+}
+
+function calcQualifying(){
+  var stake = parseFloat(document.getElementById('q-stake').value) || 0;
+  var bo = parseFloat(document.getElementById('q-back-odds').value) || 0;
+  var lo = parseFloat(document.getElementById('q-lay-odds').value) || 0;
+  var comm = (parseFloat(document.getElementById('q-comm').value) || 0) / 100;
+  var out = document.getElementById('q-result');
+  if(bo<=1 || lo<=1){ out.innerHTML = '<div class="empty">Enter odds above 1.0</div>'; return; }
+  var layStake = (stake * bo) / (lo - comm);
+  var liability = layStake * (lo - 1);
+  var backWinProfit = stake*(bo-1) - liability;
+  var layWinProfit = layStake*(1-comm) - stake;
+  var gapPct = ((lo - bo) / bo) * 100;
+  var targetLay = round2(bo * 1.02);
+  var badge = document.getElementById('q-badge');
+  if(gapPct <= 2){
+    badge.innerHTML = '<div class="badge badge-good">Tight match - low qualifying loss</div>';
+  } else if(gapPct <= 5){
+    badge.innerHTML = '<div class="badge badge-warn">Moderate gap - check other markets</div>';
+  } else {
+    badge.innerHTML = '<div class="badge badge-poor">Wide gap - qualifying loss likely high</div>';
+  }
+  out.innerHTML =
+    '<div class="target">Target: lay odds at or below <strong>'+targetLay.toFixed(2)+'</strong> for a tight match</div>' +
+    row('Lay stake', fmt(round2(layStake)), true) +
+    row('Liability', fmt(round2(liability)), true) +
+    '<div class="result-divider">' +
+    row('If back wins', fmt(round2(backWinProfit))) +
+    row('If lay wins', fmt(round2(layWinProfit))) +
+    '</div>';
+}
+
+var freeBetMode = 'snr';
+function setFreeBetMode(mode){
+  freeBetMode = mode;
+  document.getElementById('f-snr').classList.toggle('toggle-active', mode==='snr');
+  document.getElementById('f-sr').classList.toggle('toggle-active', mode==='sr');
+  calcFreeBet();
+}
+
+function calcFreeBet(){
+  var stake = parseFloat(document.getElementById('f-stake').value) || 0;
+  var bo = parseFloat(document.getElementById('f-back-odds').value) || 0;
+  var lo = parseFloat(document.getElementById('f-lay-odds').value) || 0;
+  var comm = (parseFloat(document.getElementById('f-comm').value) || 0) / 100;
+  var out = document.getElementById('f-result');
+  if(bo<=1 || lo<=1){ out.innerHTML = '<div class="empty">Enter odds above 1.0</div>'; return; }
+  var layStake, liability, backWinProfit, layWinProfit;
+  if(freeBetMode==='snr'){
+    layStake = (stake*(bo-1)) / (lo-comm);
+    liability = layStake*(lo-1);
+    backWinProfit = stake*(bo-1) - liability;
+    layWinProfit = layStake*(1-comm);
+  } else {
+    layStake = (stake*bo) / (lo-comm);
+    liability = layStake*(lo-1);
+    backWinProfit = stake*(bo-1) - liability;
+    layWinProfit = layStake*(1-comm) - stake;
+  }
+  var extraction = round2((backWinProfit+layWinProfit)/2);
+  var extractionPct = stake > 0 ? round2((extraction/stake)*100) : 0;
+  var badge = document.getElementById('f-badge');
+  var targetLine = '';
+  if(freeBetMode==='snr'){
+    var targetLay = comm + ((bo-1)*(1-comm))/0.70;
+    targetLine = '<div class="target">Target: lay odds at or below <strong>'+round2(targetLay).toFixed(2)+'</strong> for 70%+ extraction</div>';
+    if(bo >= 3 && bo <= 10 && extractionPct >= 70){
+      badge.innerHTML = '<div class="badge badge-good">Good range - solid extraction</div>';
+    } else if(bo > 10 || bo < 2){
+      badge.innerHTML = '<div class="badge badge-warn">Outside 3-10 odds - check liquidity</div>';
+    } else if(extractionPct < 70){
+      badge.innerHTML = '<div class="badge badge-poor">Low extraction - look for better odds match</div>';
+    } else {
+      badge.innerHTML = '<div class="badge badge-warn">Borderline - worth comparing alternatives</div>';
+    }
+  } else {
+    badge.innerHTML = '';
+  }
+  out.innerHTML =
+    targetLine +
+    row('Lay stake', fmt(round2(layStake)), true) +
+    row('Liability', fmt(round2(liability)), true) +
+    '<div class="result-divider">' +
+    row('If back wins', fmt(round2(backWinProfit))) +
+    row('If lay wins', fmt(round2(layWinProfit))) +
+    '</div>' +
+    '<div class="result-divider">' + row('Approx extraction', fmt(extraction) + ' (' + extractionPct + '%)', true) + '</div>';
+}
+
+['q-stake','q-back-odds','q-lay-odds','q-comm'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', calcQualifying);
+});
+['f-stake','f-back-odds','f-lay-odds','f-comm'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', calcFreeBet);
+});
+document.getElementById('f-snr').addEventListener('click', function(){ setFreeBetMode('snr'); });
+document.getElementById('f-sr').addEventListener('click', function(){ setFreeBetMode('sr'); });
+
+var STORAGE_KEY = 'mb_log_entries_v1';
+var logEntries = [];
+
+function loadLog(){
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    logEntries = raw ? JSON.parse(raw) : [];
+  } catch(e){ logEntries = []; }
+}
+function saveLog(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(logEntries)); } catch(e){}
+}
+
+function renderLog(){
+  var list = document.getElementById('l-list');
+  if(logEntries.length===0){
+    list.innerHTML = '<div class="empty">No entries yet</div>';
+    return;
+  }
+  var rows = logEntries.slice().reverse().map(function(e){
+    var color = e.profit>=0 ? 'var(--success)' : 'var(--danger)';
+    return '<div class="log-row">' +
+      '<div><div class="log-name">'+e.name+'</div><div class="log-date">'+e.date+'</div></div>' +
+      '<div style="display:flex;align-items:center;">' +
+      '<span class="log-profit" style="color:'+color+';">'+fmt(e.profit)+'</span>' +
+      '<button class="del-btn" data-id="'+e.id+'">&times;</button>' +
+      '</div></div>';
+  }).join('');
+  list.innerHTML = rows;
+  Array.prototype.forEach.call(document.querySelectorAll('.del-btn'), function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-id');
+      logEntries = logEntries.filter(function(e){ return e.id !== id; });
+      saveLog(); renderLog(); updateTotals();
+    });
+  });
+}
+
+function updateTotals(){
+  var now = new Date();
+  var monthKey = now.getFullYear()+'-'+now.getMonth();
+  var monthTotal = 0, allTotal = 0;
+  logEntries.forEach(function(e){
+    allTotal += e.profit;
+    var d = new Date(e.date);
+    if((d.getFullYear()+'-'+d.getMonth())===monthKey) monthTotal += e.profit;
+  });
+  document.getElementById('l-month-total').textContent = fmt(round2(monthTotal));
+  document.getElementById('l-all-total').textContent = fmt(round2(allTotal));
+}
+
+document.getElementById('l-add').addEventListener('click', function(){
+  var nameEl = document.getElementById('l-name');
+  var profitEl = document.getElementById('l-profit');
+  var errEl = document.getElementById('l-error');
+  var name = nameEl.value.trim();
+  var profit = parseFloat(profitEl.value);
+  if(!name){ errEl.textContent = 'Enter a bookie or offer name'; return; }
+  if(isNaN(profit)){ errEl.textContent = 'Enter a profit amount'; return; }
+  errEl.textContent = '';
+  logEntries.push({ id: Date.now().toString(), name: name, profit: round2(profit), date: new Date().toISOString().slice(0,10) });
+  saveLog(); renderLog(); updateTotals();
+  nameEl.value = ''; profitEl.value = '';
+});
+
+setFreeBetMode('snr');
+calcQualifying();
+loadLog();
+renderLog();
+updateTotals();
+</script>
+</body>
+</html>
