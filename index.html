@@ -320,14 +320,13 @@ function calcFreeBet(){
   if(freeBetMode==='snr'){
     var targetLay = comm + ((bo-1)*(1-comm))/0.70;
     targetLine = '<div class="target">Target: lay odds at or below <strong>'+round2(targetLay).toFixed(2)+'</strong> for 70%+ extraction</div>';
-    if(bo >= 3 && bo <= 10 && extractionPct >= 70){
-      badge.innerHTML = '<div class="badge badge-good">Good range - solid extraction</div>';
-    } else if(bo > 10 || bo < 2){
-      badge.innerHTML = '<div class="badge badge-warn">Outside 3-10 odds - check liquidity</div>';
-    } else if(extractionPct < 70){
-      badge.innerHTML = '<div class="badge badge-poor">Low extraction - look for better odds match</div>';
+    var liquidityNote = (bo > 15) ? ' - but check exchange liquidity at these odds' : '';
+    if(extractionPct >= 75){
+      badge.innerHTML = '<div class="badge badge-good">Good extraction'+liquidityNote+'</div>';
+    } else if(extractionPct >= 60){
+      badge.innerHTML = '<div class="badge badge-warn">Decent extraction'+liquidityNote+' - worth comparing if a tighter lay is available</div>';
     } else {
-      badge.innerHTML = '<div class="badge badge-warn">Borderline - worth comparing alternatives</div>';
+      badge.innerHTML = '<div class="badge badge-poor">Low extraction - look for a tighter lay match</div>';
     }
   } else {
     badge.innerHTML = '';
