@@ -20,6 +20,10 @@
     --accent-bg: #1c2a40;
     --success: #4caf7d;
     --danger: #e2554f;
+    --bookie: #d99a3d;
+    --bookie-bg: #332711;
+    --exchange: #4f8ff0;
+    --exchange-bg: #16233a;
     --radius: 10px;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -31,35 +35,40 @@
     padding: 16px 16px 40px;
     padding-top: max(16px, env(safe-area-inset-top));
   }
-  h1 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 4px 0 20px;
-  }
-  h2 {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 24px 0 10px;
-  }
+  h1 { font-size: 18px; font-weight: 600; margin: 4px 0 20px; }
+  h2 { font-size: 15px; font-weight: 600; margin: 24px 0 10px; }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px;
   }
-  .grid2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
+  .subcard {
+    border-radius: 8px;
+    padding: 10px 10px 4px;
+    margin-bottom: 12px;
+    border: 1px solid;
   }
-  label {
-    display: block;
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
+  .subcard-bookie { background: var(--bookie-bg); border-color: #4d3a15; }
+  .subcard-exchange { background: var(--exchange-bg); border-color: #234066; }
+  .subcard-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  input[type=number], input[type=text] {
+  .subcard-label.bookie { color: var(--bookie); }
+  .subcard-label.exchange { color: var(--exchange); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot.bookie { background: var(--bookie); }
+  .dot.exchange { background: var(--exchange); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  input[type=number], input[type=text], input[type=date] {
     width: 100%;
     background: var(--card2);
     border: 1px solid var(--border);
@@ -82,51 +91,21 @@
   .toggle-row { display: flex; gap: 8px; margin-bottom: 10px; }
   .toggle-row button { flex: 1; }
   .toggle-active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    padding: 4px 0;
-  }
+  .result-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
   .result-row .label { color: var(--text-secondary); }
-  .result-divider {
-    border-top: 1px solid var(--border);
-    margin-top: 6px;
-    padding-top: 6px;
-  }
-  .stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 10px 0 14px;
-  }
-  .stat {
-    background: var(--card2);
-    border-radius: 8px;
-    padding: 12px;
-  }
+  .result-divider { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
+  .stat { background: var(--card2); border-radius: 8px; padding: 12px; }
   .stat .l { font-size: 12px; color: var(--text-secondary); }
   .stat .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
-  .log-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .log-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .log-row:last-child { border-bottom: none; }
   .log-name { font-size: 14px; }
   .log-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
   .log-profit { font-weight: 600; font-size: 14px; }
-  .del-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 18px;
-    padding: 4px 8px;
-    margin-left: 4px;
-  }
+  .del-btn { background: none; border: none; color: var(--text-muted); font-size: 18px; padding: 4px 8px; margin-left: 4px; }
   .err { font-size: 12px; color: var(--danger); min-height: 16px; margin-bottom: 4px; }
+  .warn { font-size: 12px; color: #d9a441; min-height: 16px; margin-bottom: 4px; }
   .addbtn { width: 100%; background: var(--accent-bg); border-color: var(--accent); color: var(--accent); margin-bottom: 14px; }
   .empty { text-align: center; font-size: 13px; color: var(--text-muted); padding: 12px 0; }
   .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4; }
@@ -137,41 +116,80 @@
   .target { font-size: 13px; color: var(--accent); background: var(--accent-bg); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
   .tag { font-size: 11px; font-weight: 400; color: var(--text-muted); text-transform: none; }
   .intro { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+  .summary-card { background: linear-gradient(135deg, var(--accent-bg), var(--card)); border: 1px solid var(--accent); }
+  .summary-big { font-size: 28px; font-weight: 700; margin: 4px 0; }
+  .summary-sub { font-size: 12px; color: var(--text-secondary); }
 </style>
 </head>
 <body>
 
 <h1>Matched betting toolkit</h1>
-<div class="intro">Most offers are two steps: place a <strong>qualifying bet</strong> with your own money to trigger the bonus, then convert the resulting <strong>free bet</strong> into cash. Work through the sections in order for each offer.</div>
+<div class="intro">Most offers are two steps: place a <strong>qualifying bet</strong> with your own money at the bookmaker (hedged on the exchange), then convert the resulting <strong>free bet</strong> into cash the same way. Fill in the offer details first for full visibility of your expected return.</div>
 
-<h2>1. Qualifying bet <span class="tag">real bet, real stake</span></h2>
-<div class="hint"><strong>Use this for:</strong> the initial "risk-free" bet most offers require before they give you a bonus - e.g. "bet £20, get a £20 free bet." You're using your own money on both sides. Look for lay odds within about 1-2% of the back odds.</div>
+<h2>0. Offer details <span class="tag">what the bookmaker is offering</span></h2>
 <div class="card">
   <div class="grid2">
-    <div><label>Back stake £</label><input type="number" id="q-stake" value="20" step="0.01"></div>
-    <div><label>Back odds</label><input type="number" id="q-back-odds" value="5.0" step="0.01"></div>
-    <div><label>Lay odds</label><input type="number" id="q-lay-odds" value="5.2" step="0.01"></div>
-    <div><label>Exchange comm %</label><input type="number" id="q-comm" value="2" step="0.1"></div>
+    <div><label>Bookmaker</label><input type="text" id="o-bookie" placeholder="e.g. Bet365"></div>
+    <div><label>Offer</label><input type="text" id="o-name" placeholder="e.g. Bet £10 get £10"></div>
+    <div><label>Min qualifying odds</label><input type="number" id="o-minodds" placeholder="e.g. 1.5" step="0.01"></div>
+    <div><label>Free bet amount £</label><input type="number" id="o-freebet" placeholder="e.g. 10" step="0.01"></div>
+  </div>
+  <button id="o-apply" style="width:100%;">Apply to calculators below</button>
+</div>
+
+<h2>1. Qualifying bet <span class="tag">real bet, real stake</span></h2>
+<div class="hint"><strong>Use this for:</strong> the initial bet the offer requires before it pays out a free bet. Money goes out at the bookmaker, and comes back in (mostly) at the exchange.</div>
+<div class="card">
+  <div id="q-minodds-warn" class="warn"></div>
+  <div class="subcard subcard-bookie">
+    <div class="subcard-label bookie"><span class="dot bookie"></span>At the bookmaker (back)</div>
+    <div class="grid2">
+      <div><label>Stake £</label><input type="number" id="q-stake" value="10" step="0.01"></div>
+      <div><label>Odds</label><input type="number" id="q-back-odds" value="5.0" step="0.01"></div>
+    </div>
+  </div>
+  <div class="subcard subcard-exchange">
+    <div class="subcard-label exchange"><span class="dot exchange"></span>On the exchange (lay)</div>
+    <div class="grid2">
+      <div><label>Odds</label><input type="number" id="q-lay-odds" value="5.2" step="0.01"></div>
+      <div><label>Commission %</label><input type="number" id="q-comm" value="2" step="0.1"></div>
+    </div>
   </div>
   <div id="q-badge"></div>
   <div id="q-result"></div>
 </div>
 
 <h2>2. Free bet <span class="tag">bonus money, not your own</span></h2>
-<div class="hint"><strong>Use this for:</strong> converting the free bet you were given (from the qualifying bet above) into cash. Most UK free bets are "stake not returned" - toggle below to match what your offer says. Aim for back odds 3.0-10.0 and 70%+ extraction.</div>
+<div class="hint"><strong>Use this for:</strong> converting the free bet you were given into cash. Stake is at the bookmaker (using their free bet credit), hedge is on the exchange (your own money for the lay).</div>
 <div class="card">
   <div class="toggle-row">
     <button id="f-snr" class="toggle-active">Stake not returned</button>
     <button id="f-sr">Stake returned</button>
   </div>
-  <div class="grid2">
-    <div><label>Free bet £</label><input type="number" id="f-stake" value="20" step="0.01"></div>
-    <div><label>Back odds</label><input type="number" id="f-back-odds" value="5.0" step="0.01"></div>
-    <div><label>Lay odds</label><input type="number" id="f-lay-odds" value="5.2" step="0.01"></div>
-    <div><label>Exchange comm %</label><input type="number" id="f-comm" value="2" step="0.1"></div>
+  <div id="f-minodds-warn" class="warn"></div>
+  <div class="subcard subcard-bookie">
+    <div class="subcard-label bookie"><span class="dot bookie"></span>At the bookmaker (back, using free bet)</div>
+    <div class="grid2">
+      <div><label>Free bet £</label><input type="number" id="f-stake" value="10" step="0.01"></div>
+      <div><label>Odds</label><input type="number" id="f-back-odds" value="5.0" step="0.01"></div>
+    </div>
+  </div>
+  <div class="subcard subcard-exchange">
+    <div class="subcard-label exchange"><span class="dot exchange"></span>On the exchange (lay, your own money)</div>
+    <div class="grid2">
+      <div><label>Odds</label><input type="number" id="f-lay-odds" value="5.2" step="0.01"></div>
+      <div><label>Commission %</label><input type="number" id="f-comm" value="2" step="0.1"></div>
+    </div>
   </div>
   <div id="f-badge"></div>
   <div id="f-result"></div>
+</div>
+
+<h2>Overall offer return</h2>
+<div class="card summary-card">
+  <div class="summary-sub">Qualifying loss + free bet extraction</div>
+  <div class="summary-big" id="s-net">£0.00</div>
+  <div class="summary-sub" id="s-pct">0% return on stake</div>
 </div>
 
 <h2>3. Offer log <span class="tag">track your progress</span></h2>
@@ -197,13 +215,37 @@ function row(label, value, strong){
   return '<div class="result-row"><span class="label">'+label+'</span><span style="'+(strong?'font-weight:600;':'')+'">'+value+'</span></div>';
 }
 
+var lastQualifyingResult = { backWinProfit: 0, layWinProfit: 0 };
+var lastFreeBetResult = { extraction: 0 };
+
+document.getElementById('o-apply').addEventListener('click', function(){
+  var freebet = document.getElementById('o-freebet').value;
+  if(freebet){
+    document.getElementById('q-stake').value = freebet;
+    document.getElementById('f-stake').value = freebet;
+  }
+  calcQualifying();
+  calcFreeBet();
+});
+
+function checkMinOdds(oddsVal, warnEl){
+  var minOdds = parseFloat(document.getElementById('o-minodds').value);
+  var odds = parseFloat(oddsVal);
+  if(!isNaN(minOdds) && !isNaN(odds) && odds < minOdds){
+    warnEl.textContent = 'Below the offer\'s min odds (' + minOdds.toFixed(2) + ') - this bet may not qualify';
+  } else {
+    warnEl.textContent = '';
+  }
+}
+
 function calcQualifying(){
   var stake = parseFloat(document.getElementById('q-stake').value) || 0;
   var bo = parseFloat(document.getElementById('q-back-odds').value) || 0;
   var lo = parseFloat(document.getElementById('q-lay-odds').value) || 0;
   var comm = (parseFloat(document.getElementById('q-comm').value) || 0) / 100;
   var out = document.getElementById('q-result');
-  if(bo<=1 || lo<=1){ out.innerHTML = '<div class="empty">Enter odds above 1.0</div>'; return; }
+  checkMinOdds(document.getElementById('q-back-odds').value, document.getElementById('q-minodds-warn'));
+  if(bo<=1 || lo<=1){ out.innerHTML = '<div class="empty">Enter odds above 1.0</div>'; updateSummary(); return; }
   var layStake = (stake * bo) / (lo - comm);
   var liability = layStake * (lo - 1);
   var backWinProfit = stake*(bo-1) - liability;
@@ -220,12 +262,14 @@ function calcQualifying(){
   }
   out.innerHTML =
     '<div class="target">Target: lay odds at or below <strong>'+targetLay.toFixed(2)+'</strong> for a tight match</div>' +
-    row('Lay stake', fmt(round2(layStake)), true) +
-    row('Liability', fmt(round2(liability)), true) +
+    row('Lay stake (exchange)', fmt(round2(layStake)), true) +
+    row('Liability (exchange)', fmt(round2(liability)), true) +
     '<div class="result-divider">' +
-    row('If back wins', fmt(round2(backWinProfit))) +
-    row('If lay wins', fmt(round2(layWinProfit))) +
+    row('If back wins (bookmaker)', fmt(round2(backWinProfit))) +
+    row('If lay wins (exchange)', fmt(round2(layWinProfit))) +
     '</div>';
+  lastQualifyingResult = { backWinProfit: round2(backWinProfit), layWinProfit: round2(layWinProfit) };
+  updateSummary();
 }
 
 var freeBetMode = 'snr';
@@ -242,7 +286,8 @@ function calcFreeBet(){
   var lo = parseFloat(document.getElementById('f-lay-odds').value) || 0;
   var comm = (parseFloat(document.getElementById('f-comm').value) || 0) / 100;
   var out = document.getElementById('f-result');
-  if(bo<=1 || lo<=1){ out.innerHTML = '<div class="empty">Enter odds above 1.0</div>'; return; }
+  checkMinOdds(document.getElementById('f-back-odds').value, document.getElementById('f-minodds-warn'));
+  if(bo<=1 || lo<=1){ out.innerHTML = '<div class="empty">Enter odds above 1.0</div>'; updateSummary(); return; }
   var layStake, liability, backWinProfit, layWinProfit;
   if(freeBetMode==='snr'){
     layStake = (stake*(bo-1)) / (lo-comm);
@@ -276,13 +321,24 @@ function calcFreeBet(){
   }
   out.innerHTML =
     targetLine +
-    row('Lay stake', fmt(round2(layStake)), true) +
-    row('Liability', fmt(round2(liability)), true) +
+    row('Lay stake (exchange)', fmt(round2(layStake)), true) +
+    row('Liability (exchange)', fmt(round2(liability)), true) +
     '<div class="result-divider">' +
-    row('If back wins', fmt(round2(backWinProfit))) +
-    row('If lay wins', fmt(round2(layWinProfit))) +
+    row('If back wins (bookmaker)', fmt(round2(backWinProfit))) +
+    row('If lay wins (exchange)', fmt(round2(layWinProfit))) +
     '</div>' +
     '<div class="result-divider">' + row('Approx extraction', fmt(extraction) + ' (' + extractionPct + '%)', true) + '</div>';
+  lastFreeBetResult = { extraction: extraction };
+  updateSummary();
+}
+
+function updateSummary(){
+  var qLoss = Math.min(lastQualifyingResult.backWinProfit, lastQualifyingResult.layWinProfit);
+  var net = round2(qLoss + lastFreeBetResult.extraction);
+  var stake = parseFloat(document.getElementById('q-stake').value) || 0;
+  var pct = stake > 0 ? round2((net/stake)*100) : 0;
+  document.getElementById('s-net').textContent = fmt(net);
+  document.getElementById('s-pct').textContent = pct + '% return on your £' + stake.toFixed(2) + ' stake';
 }
 
 ['q-stake','q-back-odds','q-lay-odds','q-comm'].forEach(function(id){
@@ -361,6 +417,7 @@ document.getElementById('l-add').addEventListener('click', function(){
 
 setFreeBetMode('snr');
 calcQualifying();
+calcFreeBet();
 loadLog();
 renderLog();
 updateTotals();
