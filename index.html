@@ -147,13 +147,13 @@
     <div class="subcard-label bookie"><span class="dot bookie"></span>At the bookmaker (back)</div>
     <div class="grid2">
       <div><label>Stake £</label><input type="number" id="q-stake" value="10" step="0.01"></div>
-      <div><label>Odds</label><input type="number" id="q-back-odds" value="5.0" step="0.01"></div>
+      <div><label>Odds</label><input type="text" inputmode="decimal" id="q-back-odds" value="5.0" placeholder="5.0 or 4/1"></div>
     </div>
   </div>
   <div class="subcard subcard-exchange">
     <div class="subcard-label exchange"><span class="dot exchange"></span>On the exchange (lay)</div>
     <div class="grid2">
-      <div><label>Odds</label><input type="number" id="q-lay-odds" value="5.2" step="0.01"></div>
+      <div><label>Odds</label><input type="text" inputmode="decimal" id="q-lay-odds" value="5.2" placeholder="5.2 or 21/5"></div>
       <div><label>Commission %</label><input type="number" id="q-comm" value="2" step="0.1"></div>
     </div>
   </div>
@@ -173,13 +173,13 @@
     <div class="subcard-label bookie"><span class="dot bookie"></span>At the bookmaker (back, using free bet)</div>
     <div class="grid2">
       <div><label>Free bet £</label><input type="number" id="f-stake" value="10" step="0.01"></div>
-      <div><label>Odds</label><input type="number" id="f-back-odds" value="5.0" step="0.01"></div>
+      <div><label>Odds</label><input type="text" inputmode="decimal" id="f-back-odds" value="5.0" placeholder="5.0 or 4/1"></div>
     </div>
   </div>
   <div class="subcard subcard-exchange">
     <div class="subcard-label exchange"><span class="dot exchange"></span>On the exchange (lay, your own money)</div>
     <div class="grid2">
-      <div><label>Odds</label><input type="number" id="f-lay-odds" value="5.2" step="0.01"></div>
+      <div><label>Odds</label><input type="text" inputmode="decimal" id="f-lay-odds" value="5.2" placeholder="5.2 or 21/5"></div>
       <div><label>Commission %</label><input type="number" id="f-comm" value="2" step="0.1"></div>
     </div>
   </div>
@@ -213,6 +213,18 @@
 <script>
 function round2(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
 function fmt(n){ return '£' + n.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function parseOdds(str){
+  if(!str) return 0;
+  str = String(str).trim();
+  if(str.indexOf('/') !== -1){
+    var parts = str.split('/');
+    var num = parseFloat(parts[0]);
+    var den = parseFloat(parts[1]);
+    if(!den) return 0;
+    return round2(1 + (num/den));
+  }
+  return parseFloat(str) || 0;
+}
 function row(label, value, strong){
   return '<div class="result-row"><span class="label">'+label+'</span><span style="'+(strong?'font-weight:600;':'')+'">'+value+'</span></div>';
 }
@@ -231,8 +243,8 @@ document.getElementById('o-apply').addEventListener('click', function(){
 
 function checkMinOdds(oddsVal, warnEl){
   var minOdds = parseFloat(document.getElementById('o-minodds').value);
-  var odds = parseFloat(oddsVal);
-  if(!isNaN(minOdds) && !isNaN(odds) && odds < minOdds){
+  var odds = parseOdds(oddsVal);
+  if(!isNaN(minOdds) && odds > 0 && odds < minOdds){
     warnEl.textContent = 'Below the offer\'s min odds (' + minOdds.toFixed(2) + ') - this bet may not qualify';
   } else {
     warnEl.textContent = '';
@@ -241,8 +253,8 @@ function checkMinOdds(oddsVal, warnEl){
 
 function calcQualifying(){
   var stake = parseFloat(document.getElementById('q-stake').value) || 0;
-  var bo = parseFloat(document.getElementById('q-back-odds').value) || 0;
-  var lo = parseFloat(document.getElementById('q-lay-odds').value) || 0;
+  var bo = parseOdds(document.getElementById('q-back-odds').value);
+  var lo = parseOdds(document.getElementById('q-lay-odds').value);
   var comm = (parseFloat(document.getElementById('q-comm').value) || 0) / 100;
   var out = document.getElementById('q-result');
   checkMinOdds(document.getElementById('q-back-odds').value, document.getElementById('q-minodds-warn'));
@@ -283,8 +295,8 @@ function setFreeBetMode(mode){
 
 function calcFreeBet(){
   var stake = parseFloat(document.getElementById('f-stake').value) || 0;
-  var bo = parseFloat(document.getElementById('f-back-odds').value) || 0;
-  var lo = parseFloat(document.getElementById('f-lay-odds').value) || 0;
+  var bo = parseOdds(document.getElementById('f-back-odds').value);
+  var lo = parseOdds(document.getElementById('f-lay-odds').value);
   var comm = (parseFloat(document.getElementById('f-comm').value) || 0) / 100;
   var out = document.getElementById('f-result');
   checkMinOdds(document.getElementById('f-back-odds').value, document.getElementById('f-minodds-warn'));
